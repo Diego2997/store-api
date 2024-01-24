@@ -1,26 +1,56 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { Category } from './entities/category.entity';
 
 @Injectable()
 export class CategoriesService {
-  create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
-  }
+  private counterId = 1;
+  private categories: Category[] = [
+    {
+      id: 1,
+      name: 'Category 1',
+    },
+  ];
 
   findAll() {
-    return `This action returns all categories`;
+    return this.categories;
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} category`;
+    const category = this.categories.find((item) => item.id === id);
+    if (!category) {
+      throw new NotFoundException(`Category #${id} not found`);
+    }
+    return category;
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  create(data: CreateCategoryDto) {
+    this.counterId = this.counterId + 1;
+    const newCategory = {
+      id: this.counterId,
+      ...data,
+    };
+    this.categories.push(newCategory);
+    return newCategory;
+  }
+
+  update(id: number, changes: UpdateCategoryDto) {
+    const category = this.findOne(id);
+    const index = this.categories.findIndex((item) => item.id === id);
+    this.categories[index] = {
+      ...category,
+      ...changes,
+    };
+    return this.categories[index];
   }
 
   remove(id: number) {
-    return `This action removes a #${id} category`;
+    const index = this.categories.findIndex((item) => item.id === id);
+    if (index === -1) {
+      throw new NotFoundException(`Category #${id} not found`);
+    }
+    this.categories.splice(index, 1);
+    return true;
   }
 }
