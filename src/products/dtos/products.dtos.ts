@@ -5,6 +5,7 @@ import {
   IsString,
   IsUrl,
 } from 'class-validator';
+import { PartialType } from '@nestjs/mapped-types';
 
 export class CreateProductDto {
   @IsNotEmpty()
@@ -29,3 +30,5 @@ export class CreateProductDto {
   @IsUrl()
   image: string;
 }
+
+export class UpdateProductDto extends PartialType(CreateProductDto) {}

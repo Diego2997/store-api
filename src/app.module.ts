@@ -5,24 +5,27 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ProductsModule } from './products/products.module';
 import { BrandsModule } from './brands/brands.module';
-import { CategoriesModule } from './categories/categories.module';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
 import { SeedModule } from './seed/seed.module';
-import { CustomersModule } from './customers/customers.module';
+import { ConfigModule } from '@nestjs/config';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
     }),
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+      isGlobal: true,
+    }),
     ProductsModule,
     BrandsModule,
-    CategoriesModule,
     UsersModule,
     CommonModule,
     SeedModule,
-    CustomersModule,
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],
