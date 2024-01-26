@@ -10,6 +10,7 @@ import { CommonModule } from './common/common.module';
 import { SeedModule } from './seed/seed.module';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
+import config from './config';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { DatabaseModule } from './database/database.module';
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
+      load: [config],
     }),
     ProductsModule,
     BrandsModule,
