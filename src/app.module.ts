@@ -10,8 +10,8 @@ import { CommonModule } from './common/common.module';
 import { SeedModule } from './seed/seed.module';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
-import config from './config';
-import * as Joi from 'joi';
+import configuration from './config/configuration';
+import validateConfiguration from './config/validateConfiguration';
 
 @Module({
   imports: [
@@ -21,11 +21,8 @@ import * as Joi from 'joi';
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
-      load: [config],
-      validationSchema: Joi.object({
-        DATABASE_NAME: Joi.string().required(),
-        PORT: Joi.number().required(),
-      }),
+      load: [configuration],
+      validationSchema: validateConfiguration,
     }),
     ProductsModule,
     BrandsModule,
