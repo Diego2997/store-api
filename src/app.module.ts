@@ -11,6 +11,7 @@ import { SeedModule } from './seed/seed.module';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import config from './config';
+import * as Joi from 'joi';
 
 @Module({
   imports: [
@@ -21,6 +22,10 @@ import config from './config';
       envFilePath: '.env',
       isGlobal: true,
       load: [config],
+      validationSchema: Joi.object({
+        DATABASE_NAME: Joi.string().required(),
+        PORT: Joi.number().required(),
+      }),
     }),
     ProductsModule,
     BrandsModule,
