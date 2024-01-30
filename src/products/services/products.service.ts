@@ -48,7 +48,6 @@ export class ProductsService {
     const product = await this.findOne(id);
     return this.productRepo.remove(product);
   }
-
   private handleErrors(error: any) {
     if (error.code === '23505') {
       throw new BadRequestException(error.detail);

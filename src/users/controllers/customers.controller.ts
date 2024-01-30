@@ -9,36 +9,37 @@ import {
 } from '@nestjs/common';
 import { CustomersService } from '../services/customers.service';
 import { CreateCustomerDto, UpdateCustomerDto } from '../dtos/customer.dtos';
+import { ParseIntPipe } from 'src/common/pipes/parse-int.pipe';
 
 @Controller('customers')
 export class CustomersController {
   constructor(private readonly customersService: CustomersService) {}
 
-  // @Post()
-  // create(@Body() createCustomerDto: CreateCustomerDto) {
-  //   return this.customersService.create(createCustomerDto);
-  // }
+  @Post()
+  create(@Body() createCustomerDto: CreateCustomerDto) {
+    return this.customersService.create(createCustomerDto);
+  }
 
-  // @Get()
-  // findAll() {
-  //   return this.customersService.findAll();
-  // }
+  @Get()
+  findAll() {
+    return this.customersService.findAll();
+  }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.customersService.findOne(+id);
-  // }
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.customersService.findOne(id);
+  }
 
-  // @Patch(':id')
-  // update(
-  //   @Param('id') id: string,
-  //   @Body() updateCustomerDto: UpdateCustomerDto,
-  // ) {
-  //   return this.customersService.update(+id, updateCustomerDto);
-  // }
+  @Patch(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateCustomerDto: UpdateCustomerDto,
+  ) {
+    return this.customersService.update(id, updateCustomerDto);
+  }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.customersService.remove(+id);
-  // }
+  @Delete(':id')
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.customersService.remove(id);
+  }
 }

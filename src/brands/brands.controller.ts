@@ -10,33 +10,37 @@ import {
 import { BrandsService } from './brands.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
+import { ParseIntPipe } from 'src/common/pipes/parse-int.pipe';
 
 @Controller('brands')
 export class BrandsController {
   constructor(private readonly brandsService: BrandsService) {}
 
-  // @Post()
-  // create(@Body() createBrandDto: CreateBrandDto) {
-  //   return this.brandsService.create(createBrandDto);
-  // }
+  @Post()
+  create(@Body() createBrandDto: CreateBrandDto) {
+    return this.brandsService.create(createBrandDto);
+  }
 
-  // @Get()
-  // findAll() {
-  //   return this.brandsService.findAll();
-  // }
+  @Get()
+  findAll() {
+    return this.brandsService.findAll();
+  }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.brandsService.findOne(+id);
-  // }
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: string) {
+    return this.brandsService.findOne(+id);
+  }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateBrandDto: UpdateBrandDto) {
-  //   return this.brandsService.update(+id, updateBrandDto);
-  // }
+  @Patch(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateBrandDto: UpdateBrandDto,
+  ) {
+    return this.brandsService.update(id, updateBrandDto);
+  }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.brandsService.remove(+id);
-  // }
+  @Delete(':id')
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.brandsService.remove(id);
+  }
 }

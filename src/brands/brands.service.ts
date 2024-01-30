@@ -1,52 +1,57 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { Brand } from './entities/brand.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class BrandsService {
-  // private counterId = 1;
-  // private brands: Brand[] = [
-  //   {
-  //     id: 1,
-  //     name: 'Brand 1',
-  //     image: 'https://i.imgur.com/U4iGx1j.jpeg',
-  //   },
-  // ];
-  // findAll() {
-  //   return this.brands;
-  // }
-  // findOne(id: number) {
-  //   const product = this.brands.find((item) => item.id === id);
-  //   if (!product) {
-  //     throw new NotFoundException(`Brand #${id} not found`);
-  //   }
-  //   return product;
-  // }
-  // create(data: CreateBrandDto) {
-  //   this.counterId = this.counterId + 1;
-  //   const newBrand = {
-  //     id: this.counterId,
-  //     ...data,
-  //   };
-  //   this.brands.push(newBrand);
-  //   return newBrand;
-  // }
-  // update(id: number, changes: UpdateBrandDto) {
-  //   const brand = this.findOne(id);
-  //   const index = this.brands.findIndex((item) => item.id === id);
-  //   this.brands[index] = {
-  //     ...brand,
-  //     ...changes,
-  //   };
-  //   return this.brands[index];
-  // }
-  // remove(id: number) {
-  //   const index = this.brands.findIndex((item) => item.id === id);
-  //   if (index === -1) {
-  //     throw new NotFoundException(`Brand #${id} not found`);
-  //   }
-  //   this.brands.splice(index, 1);
-  //   return true;
-  // }
+  constructor(
+    @InjectRepository(Brand) private readonly brandRepo: Repository<Brand>,
+  ) {}
+  findAll() {
+    return this.brandRepo.find();
+  }
+  async findOne(id: number) {
+    const product = await this.brandRepo.findOneBy({ id });
+    if (!product) {
+      throw new NotFoundException(`Brand #${id} not found`);
+    }
+    return product;
+  }
+  async create(data: CreateBrandDto) {
+    try {
+      const newBrand = this.brandRepo.create(data);
+      await this.brandRepo.save(newBrand);
+      return newBrand;
+    } catch (error) {
+      this.handleErrors(error);
+    }
+  }
+  async update(id: number, changes: UpdateBrandDto) {
+    try {
+      const brand = await this.findOne(id);
+      this.brandRepo.merge(brand, changes);
+      await this.brandRepo.save(brand);
+    } catch (error) {
+      this.handleErrors(error);
+    }
+  }
+  async remove(id: number) {
+    const brand = await this.findOne(id);
+    await this.brandRepo.remove(brand);
+  }
+
+  private handleErrors(error: any) {
+    if (error.code === '23505') {
+      throw new BadRequestException(error.detail);
+    }
+    throw new InternalServerErrorException(`Error, check server logs`);
+  }
 }
