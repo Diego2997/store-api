@@ -1,6 +1,8 @@
 import {
   IsEmail,
   IsNotEmpty,
+  IsOptional,
+  IsPositive,
   IsString,
   IsStrongPassword,
 } from 'class-validator';
@@ -14,12 +16,15 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsString()
-  @IsStrongPassword()
   password: string;
 
   @IsNotEmpty()
   @IsString()
   role: string;
+
+  @IsOptional()
+  @IsPositive()
+  customerId: number;
 }
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {}

@@ -5,6 +5,7 @@ import { User } from '../entities/user.entity';
 import { ProductsService } from 'src/products/services/products.service';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CustomersService } from './customers.service';
 
 @Injectable()
 export class UsersService {
@@ -12,6 +13,7 @@ export class UsersService {
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
     private readonly productService: ProductsService,
+    private readonly customerService: CustomersService,
   ) {}
 
   findAll() {
@@ -29,6 +31,10 @@ export class UsersService {
   async create(data: CreateUserDto) {
     try {
       const newUser = this.userRepo.create(data);
+      if (data.customerId) {
+        const customer = await this.customerService.findOne(data.customerId);
+        newUser.customer = customer;
+      }
       await this.userRepo.save(newUser);
       return newUser;
     } catch (error) {
