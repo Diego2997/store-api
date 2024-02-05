@@ -1,5 +1,6 @@
+import { Brand } from 'src/brands/entities/brand.entity';
 import { BaseEntity } from 'src/common/entity/base.entity';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 
 @Entity()
 export class Product extends BaseEntity {
@@ -15,6 +16,9 @@ export class Product extends BaseEntity {
   @Column({ type: 'int' })
   stock: number;
 
-  @Column({ type: 'varchar' })
-  image: string;
+  @Column({ type: 'text', array: true })
+  images: string[];
+
+  @ManyToOne(() => Brand, (brand) => brand.products)
+  brand: Brand;
 }

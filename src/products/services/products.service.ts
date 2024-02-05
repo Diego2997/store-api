@@ -8,17 +8,23 @@ import { CreateProductDto, UpdateProductDto } from '../dtos/products.dtos';
 import { Product } from '../entities/product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { BrandsService } from 'src/brands/brands.service';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepo: Repository<Product>,
+    private readonly brandService: BrandsService,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
     try {
       const newProduct = this.productRepo.create(createProductDto);
+      if (createProductDto.brandId) {
+        const brand = await this.brandService.findOne(createProductDto.brandId);
+        newProduct.brand = brand;
+      }
       await this.productRepo.save(newProduct);
       return newProduct;
     } catch (error) {
@@ -39,9 +45,17 @@ export class ProductsService {
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
-    const product = await this.findOne(id);
-    this.productRepo.merge(product, updateProductDto);
-    await this.productRepo.save(product);
+    try {
+      const product = await this.findOne(id);
+      if (updateProductDto.brandId) {
+        const brand = await this.brandService.findOne(updateProductDto.brandId);
+        product.brand = brand;
+      }
+      this.productRepo.merge(product, updateProductDto);
+      await this.productRepo.save(product);
+    } catch (error) {
+      this.handleErrors(error);
+    }
   }
 
   async remove(id: number) {
