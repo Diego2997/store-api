@@ -7,18 +7,39 @@ import {
 import { CreateProductDto, UpdateProductDto } from '../dtos/products.dtos';
 import { Product } from '../entities/product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
+import { BrandsService } from 'src/brands/brands.service';
+import { Category } from '../entities/category.entity';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepo: Repository<Product>,
+    private readonly brandService: BrandsService,
+    @InjectRepository(Category)
+    private readonly categoryRepo: Repository<Category>,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
     try {
       const newProduct = this.productRepo.create(createProductDto);
+      if (createProductDto.brandId) {
+        const brand = await this.brandService.findOne(createProductDto.brandId);
+        newProduct.brand = brand;
+      }
+      if (createProductDto.categoriesIds) {
+        // const categories = await this.categoryRepo.find({
+        //   where: createProductDto.categoriesIds.map((category) => ({
+        //     id: category,
+        //   })),
+        // });
+        // newProduct.categories = categories;
+        const categories = await this.categoryRepo.find({
+          where: { id: In(createProductDto.categoriesIds) },
+        });
+        newProduct.categories = categories;
+      }
       await this.productRepo.save(newProduct);
       return newProduct;
     } catch (error) {
@@ -27,11 +48,14 @@ export class ProductsService {
   }
 
   async findAll() {
-    return await this.productRepo.find();
+    return await this.productRepo.find({ relations: ['brand'] });
   }
 
   async findOne(id: number) {
-    const productFound = await this.productRepo.findOneBy({ id });
+    const productFound = await this.productRepo.findOne({
+      where: { id },
+      relations: { brand: true, categories: true },
+    });
     if (!productFound) {
       throw new NotFoundException(`Product with id ${id} not found`);
     }
@@ -39,9 +63,17 @@ export class ProductsService {
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
-    const product = await this.findOne(id);
-    this.productRepo.merge(product, updateProductDto);
-    await this.productRepo.save(product);
+    try {
+      const product = await this.findOne(id);
+      if (updateProductDto.brandId) {
+        const brand = await this.brandService.findOne(updateProductDto.brandId);
+        product.brand = brand;
+      }
+      this.productRepo.merge(product, updateProductDto);
+      await this.productRepo.save(product);
+    } catch (error) {
+      this.handleErrors(error);
+    }
   }
 
   async remove(id: number) {
