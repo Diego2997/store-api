@@ -6,6 +6,6 @@ export class Brand extends BaseEntity {
   @Column({ type: 'varchar', length: 255 })
   name: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 254 })
   image: string;
 }
