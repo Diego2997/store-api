@@ -7,8 +7,9 @@ import {
 import { CreateProductDto, UpdateProductDto } from '../dtos/products.dtos';
 import { Product } from '../entities/product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { BrandsService } from 'src/brands/brands.service';
+import { Category } from '../entities/category.entity';
 
 @Injectable()
 export class ProductsService {
@@ -16,6 +17,8 @@ export class ProductsService {
     @InjectRepository(Product)
     private readonly productRepo: Repository<Product>,
     private readonly brandService: BrandsService,
+    @InjectRepository(Category)
+    private readonly categoryRepo: Repository<Category>,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
@@ -25,6 +28,18 @@ export class ProductsService {
         const brand = await this.brandService.findOne(createProductDto.brandId);
         newProduct.brand = brand;
       }
+      if (createProductDto.categoriesIds) {
+        // const categories = await this.categoryRepo.find({
+        //   where: createProductDto.categoriesIds.map((category) => ({
+        //     id: category,
+        //   })),
+        // });
+        // newProduct.categories = categories;
+        const categories = await this.categoryRepo.find({
+          where: { id: In(createProductDto.categoriesIds) },
+        });
+        newProduct.categories = categories;
+      }
       await this.productRepo.save(newProduct);
       return newProduct;
     } catch (error) {
@@ -33,11 +48,14 @@ export class ProductsService {
   }
 
   async findAll() {
-    return await this.productRepo.find();
+    return await this.productRepo.find({ relations: ['brand'] });
   }
 
   async findOne(id: number) {
-    const productFound = await this.productRepo.findOneBy({ id });
+    const productFound = await this.productRepo.findOne({
+      where: { id },
+      relations: { brand: true, categories: true },
+    });
     if (!productFound) {
       throw new NotFoundException(`Product with id ${id} not found`);
     }

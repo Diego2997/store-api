@@ -10,6 +10,6 @@ export class Brand extends BaseEntity {
   @Column({ type: 'varchar', length: 255 })
   image: string;
 
-  @OneToMany(() => Product, (product) => product.brand, { eager: true })
+  @OneToMany(() => Product, (product) => product.brand)
   products: Product[];
 }

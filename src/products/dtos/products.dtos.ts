@@ -35,6 +35,10 @@ export class CreateProductDto {
   @IsNotEmpty()
   @IsPositive()
   brandId: number;
+
+  @IsNotEmpty()
+  @IsArray()
+  categoriesIds: number[];
 }
 
 export class UpdateProductDto extends PartialType(CreateProductDto) {}
