@@ -86,4 +86,10 @@ export class ProductsService {
     }
     throw new InternalServerErrorException(`Error, check server logs`);
   }
+
+  async addCategoryToProduct(productId: number, categoryId: number) {
+    const product = await this.findOne(productId);
+  }
+
+  async removeCategoryByProduct() {}
 }
