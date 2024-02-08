@@ -69,8 +69,15 @@ export class ProductsService {
         const brand = await this.brandService.findOne(updateProductDto.brandId);
         product.brand = brand;
       }
+      if (updateProductDto.categoriesIds) {
+        const categories = await this.categoryRepo.find({
+          where: { id: In(updateProductDto.categoriesIds) },
+        });
+        product.categories = categories;
+      }
       this.productRepo.merge(product, updateProductDto);
       await this.productRepo.save(product);
+      return product;
     } catch (error) {
       this.handleErrors(error);
     }
@@ -85,5 +92,21 @@ export class ProductsService {
       throw new BadRequestException(error.detail);
     }
     throw new InternalServerErrorException(`Error, check server logs`);
+  }
+
+  async removeCategoryByProduct(productId: number, categoryId: number) {
+    try {
+      const product = await this.productRepo.findOne({
+        where: { id: productId },
+        relations: { categories: true },
+      });
+      product.categories = product.categories.filter((item) => {
+        return item.id !== categoryId;
+      });
+      await this.productRepo.save(product);
+      console.log(product);
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

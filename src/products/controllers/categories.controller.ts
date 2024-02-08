@@ -11,7 +11,7 @@ import { CategoriesService } from '../services/categories.service';
 import { CreateCategoryDto, UpdateCategoryDto } from '../dtos/category.dtos';
 import { ParseIntPipe } from 'src/common/pipes/parse-int.pipe';
 
-@Controller('categories')
+@Controller('category')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
