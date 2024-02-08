@@ -4,7 +4,6 @@ import {
   IsOptional,
   IsPositive,
   IsString,
-  IsStrongPassword,
 } from 'class-validator';
 import { PartialType } from '@nestjs/mapped-types';
 

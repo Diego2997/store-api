@@ -9,10 +9,14 @@ import { User } from './entities/user.entity';
 import { Customer } from './entities/customer.entity';
 import { Order } from './entities/order.entity';
 import { OrderItem } from './entities/order-item.entity';
+import { OrdersService } from './services/orders.service';
+import { OrdersController } from './controllers/orders.controller';
+import { OrderItemService } from './services/order-item.service';
+import { OrderItemController } from './controllers/order-item.controller';
 
 @Module({
-  controllers: [UsersController, CustomersController],
-  providers: [UsersService, CustomersService],
+  controllers: [UsersController, CustomersController, OrdersController, OrderItemController],
+  providers: [UsersService, CustomersService, OrdersService, OrderItemService],
   imports: [
     ProductsModule,
     TypeOrmModule.forFeature([User, Customer, Order, OrderItem]),
