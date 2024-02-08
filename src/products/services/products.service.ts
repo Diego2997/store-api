@@ -100,12 +100,11 @@ export class ProductsService {
         where: { id: productId },
         relations: { categories: true },
       });
-      product.categories = product.categories.filter(
-        (item) => item.id !== categoryId,
-      );
+      product.categories = product.categories.filter((item) => {
+        return item.id !== categoryId;
+      });
+      await this.productRepo.save(product);
       console.log(product);
-      this.productRepo.save(product);
-      return product;
     } catch (error) {
       console.log(error);
     }

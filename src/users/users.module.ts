@@ -8,10 +8,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Customer } from './entities/customer.entity';
 import { Order } from './entities/order.entity';
+import { OrderItem } from './entities/order-item.entity';
 
 @Module({
   controllers: [UsersController, CustomersController],
   providers: [UsersService, CustomersService],
-  imports: [ProductsModule, TypeOrmModule.forFeature([User, Customer, Order])],
+  imports: [
+    ProductsModule,
+    TypeOrmModule.forFeature([User, Customer, Order, OrderItem]),
+  ],
 })
 export class UsersModule {}
