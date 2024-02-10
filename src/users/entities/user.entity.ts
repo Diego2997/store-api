@@ -16,6 +16,6 @@ export class User extends BaseEntity {
   @OneToOne(() => Customer, (customer) => customer.user, {
     nullable: true,
   })
-  @JoinColumn()
+  @JoinColumn({ name: 'customer_id' })
   customer: Customer;
 }
