@@ -10,6 +10,7 @@ import { CommonModule } from './common/common.module';
 import { SeedModule } from './seed/seed.module';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
+import { AuthModule } from './auth/auth.module';
 import configuration from './config/configuration';
 import validateConfiguration from './config/validateConfiguration';
 
@@ -30,6 +31,7 @@ import validateConfiguration from './config/validateConfiguration';
     CommonModule,
     SeedModule,
     DatabaseModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
