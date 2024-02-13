@@ -58,11 +58,11 @@ export class UsersService {
   }
 
   async getOrderByUserId(id: number) {
-    const user = this.findOne(id);
-    return {
-      date: new Date(),
-      user,
-      products: await this.productService.findAll(),
-    };
+    // const user = this.findOne(id);
+    // return {
+    //   date: new Date(),
+    //   user,
+    //   products: await this.productService.findAll(),
+    // };
   }
 }
