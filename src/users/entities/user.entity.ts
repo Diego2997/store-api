@@ -1,12 +1,14 @@
 import { BaseEntity } from 'src/common/entity/base.entity';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { Customer } from './customer.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class User extends BaseEntity {
   @Column({ unique: true })
   email: string;
 
+  @Exclude()
   @Column({ type: 'varchar' })
   password: string;
 

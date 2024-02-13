@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from '../dtos/user.dtos';
 
 import { User } from '../entities/user.entity';
@@ -6,6 +11,7 @@ import { ProductsService } from 'src/products/services/products.service';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CustomersService } from './customers.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -35,10 +41,13 @@ export class UsersService {
         const customer = await this.customerService.findOne(data.customerId);
         newUser.customer = customer;
       }
+      const salt = 10;
+      const hashPassword = await bcrypt.hash(newUser.password, salt);
+      newUser.password = hashPassword;
       await this.userRepo.save(newUser);
       return newUser;
     } catch (error) {
-      console.log(error);
+      this.errorHandler(error);
     }
   }
 
@@ -64,5 +73,17 @@ export class UsersService {
     //   user,
     //   products: await this.productService.findAll(),
     // };
+  }
+
+  findByEmail(email: string) {
+    return this.userRepo.findOne({ where: { email } });
+  }
+
+  errorHandler(error: any) {
+    const errorCode = error.code;
+    if (error.code === errorCode) {
+      throw new BadRequestException(`${error.detail}`);
+    }
+    throw new InternalServerErrorException('Error, Check server logs');
   }
 }
