@@ -3,31 +3,27 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from '../entities/order.entity';
 import { Repository } from 'typeorm';
 import { CreateOrderDto, UpdateOrderDto } from '../dtos/order.dto';
-import { CustomersService } from './customers.service';
+import { UsersService } from './users.service';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectRepository(Order) private readonly orderRepo: Repository<Order>,
-    private readonly customerService: CustomersService,
+    private readonly userService: UsersService,
   ) {}
   async create(createOrderDto: CreateOrderDto) {
     const order = new Order();
-    if (createOrderDto.customerId) {
-      const customer = await this.customerService.findOne(
-        createOrderDto.customerId,
-      );
-      order.customer = customer;
+    if (createOrderDto.userId) {
+      const user = await this.userService.findOne(createOrderDto.userId);
+      order.user = user;
     }
     return await this.orderRepo.save(order);
   }
   async update(id: number, updateOrderDto: UpdateOrderDto) {
     const order = await this.findOne(id);
-    if (updateOrderDto.customerId) {
-      const customer = await this.customerService.findOne(
-        updateOrderDto.customerId,
-      );
-      order.customer = customer;
+    if (updateOrderDto.userId) {
+      const user = await this.userService.findOne(updateOrderDto.userId);
+      order.user = user;
     }
     await this.orderRepo.save(order);
   }
@@ -38,7 +34,7 @@ export class OrdersService {
   async findOne(id: number) {
     const order = await this.orderRepo.findOne({
       where: { id },
-      relations: ['items', 'items.product', 'customer'],
+      relations: ['items', 'items.product', 'user'],
     });
     if (!order) {
       throw new NotFoundException();

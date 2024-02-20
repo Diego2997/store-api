@@ -1,12 +1,12 @@
 import { BaseEntity } from 'src/common/entity/base.entity';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
-import { Customer } from './customer.entity';
+import { Entity, ManyToOne, OneToMany } from 'typeorm';
 import { OrderItem } from './order-item.entity';
+import { User } from './user.entity';
 
 @Entity()
 export class Order extends BaseEntity {
-  @ManyToOne(() => Customer, (customer) => customer.orders)
-  customer: Customer;
+  @ManyToOne(() => User, (user) => user.orders)
+  user: User;
 
   @OneToMany(() => OrderItem, (item) => item.order)
   items: OrderItem[];

@@ -30,10 +30,10 @@ export class UsersController {
     return this.usersService.findOne(+id);
   }
 
-  @Get(':id/orders')
-  getOrdersByUserId(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.getOrderByUserId(id);
-  }
+  // @Get(':id/orders')
+  // getOrdersByUserId(@Param('id', ParseIntPipe) id: number) {
+  //   return this.usersService.getOrderByUserId(id);
+  // }
 
   @Patch(':id')
   update(

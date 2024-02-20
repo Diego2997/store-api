@@ -4,7 +4,7 @@ import { IsNotEmpty, IsPositive } from 'class-validator';
 export class CreateOrderDto {
   @IsNotEmpty()
   @IsPositive()
-  customerId: number;
+  userId: number;
 }
 
 export class UpdateOrderDto extends PartialType(CreateOrderDto) {}
