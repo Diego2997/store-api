@@ -63,6 +63,7 @@ export class UsersService {
         fullName: true,
         roles: true,
         password: true,
+        isActive: true,
       },
     });
   }
