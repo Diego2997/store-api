@@ -12,6 +12,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 @Injectable()
 export class AuthService {
   constructor(private readonly userService: UsersService) {}
+
   async create(createUserDto: RegisterUserDto) {
     const { password, ...restUser } = createUserDto;
     const user = await this.userService.create({

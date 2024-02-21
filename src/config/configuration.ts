@@ -12,8 +12,6 @@ export default registerAs('configuration', () => {
       password: process.env.POSTGRES_PASSWORD,
       port: +process.env.POSTGRES_PORT,
     },
-    jwt: {
-      secret: process.env.JWT_SECRET,
-    },
+    jwtSecret: process.env.JWT_SECRET,
   };
 });
