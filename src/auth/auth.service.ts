@@ -33,7 +33,7 @@ export class AuthService {
       throw new UnauthorizedException('Credentials are not valid');
     }
     delete user.password;
-    return { ...user, token: this.getJwtToken({ email: user.email }) };
+    return { ...user, token: this.getJwtToken({ id: user.id }) };
   }
 
   private getJwtToken(payload: JwtPayload) {
