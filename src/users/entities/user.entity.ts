@@ -1,21 +1,44 @@
 import { BaseEntity } from 'src/common/entity/base.entity';
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
-import { Customer } from './customer.entity';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
+import { Exclude } from 'class-transformer';
+import { Order } from './order.entity';
 
 @Entity()
 export class User extends BaseEntity {
-  @Column({ unique: true })
+  @Column({ type: 'text', unique: true })
   email: string;
 
-  @Column({ type: 'varchar' })
+  @Exclude()
+  @Column({ type: 'text', select: false })
   password: string;
 
-  @Column()
-  role: string;
+  @Column({ type: 'text' })
+  fullName: string;
 
-  @OneToOne(() => Customer, (customer) => customer.user, {
-    nullable: true,
-  })
-  @JoinColumn()
-  customer: Customer;
+  @Column({ type: 'bool', default: true, name: 'is_active' })
+  isActive: boolean;
+
+  @Column({ type: 'text', array: true, default: ['user'] })
+  roles: string[];
+
+  @OneToMany(() => Order, (order) => order.user)
+  orders: Order[];
+
+  @BeforeInsert()
+  checkFieldsBeforeInsert() {
+    this.email = this.email.toLowerCase().trim();
+  }
+
+  @BeforeUpdate()
+  checkFieldsBeforeUpdate() {
+    this.checkFieldsBeforeInsert();
+  }
 }

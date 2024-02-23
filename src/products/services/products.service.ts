@@ -10,6 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { BrandsService } from 'src/brands/brands.service';
 import { Category } from '../entities/category.entity';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class ProductsService {
@@ -47,8 +48,19 @@ export class ProductsService {
     }
   }
 
-  async findAll() {
-    return await this.productRepo.find({ relations: ['brand'] });
+  async findAll(paginationDto: PaginationDto) {
+    // return await this.productRepo.find({ relations: ['brand'] });
+    try {
+      const { limit = 10, offset = 0 } = paginationDto;
+      const products = await this.productRepo.find({
+        relations: { brand: true },
+        take: limit,
+        skip: offset,
+      });
+      return products;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async findOne(id: number) {

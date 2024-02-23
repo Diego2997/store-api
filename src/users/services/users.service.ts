@@ -1,19 +1,20 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from '../dtos/user.dtos';
 
 import { User } from '../entities/user.entity';
-import { ProductsService } from 'src/products/services/products.service';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CustomersService } from './customers.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
-    private readonly productService: ProductsService,
-    private readonly customerService: CustomersService,
   ) {}
 
   findAll() {
@@ -31,14 +32,10 @@ export class UsersService {
   async create(data: CreateUserDto) {
     try {
       const newUser = this.userRepo.create(data);
-      if (data.customerId) {
-        const customer = await this.customerService.findOne(data.customerId);
-        newUser.customer = customer;
-      }
       await this.userRepo.save(newUser);
       return newUser;
     } catch (error) {
-      console.log(error);
+      this.errorHandler(error);
     }
   }
 
@@ -57,12 +54,25 @@ export class UsersService {
     await this.userRepo.remove(user);
   }
 
-  async getOrderByUserId(id: number) {
-    const user = this.findOne(id);
-    return {
-      date: new Date(),
-      user,
-      products: await this.productService.findAll(),
-    };
+  findByEmail(email: string) {
+    return this.userRepo.findOne({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        roles: true,
+        password: true,
+        isActive: true,
+      },
+    });
+  }
+
+  errorHandler(error: any) {
+    const errorCode = error.code;
+    if (error.code === errorCode) {
+      throw new BadRequestException(`${error.detail}`);
+    }
+    throw new InternalServerErrorException('Error, Check server logs');
   }
 }

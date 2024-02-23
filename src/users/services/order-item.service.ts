@@ -25,5 +25,6 @@ export class OrderItemService {
     item.quantity = orderItem.quantity;
     console.log(item);
     await this.itemRepo.save(item);
+    // return item;
   }
 }
